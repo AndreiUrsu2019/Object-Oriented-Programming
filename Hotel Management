@@ -1,0 +1,1306 @@
+#include <iostream>
+#include<fstream>
+#include <string.h>
+#include <list>
+#include <vector>
+#include<map>
+#include<set>
+#include<exception>
+
+using namespace std;
+
+fstream f("date_hotel.txt");
+
+class IOinterface
+
+{
+
+public:
+
+    virtual istream& citire(istream& in)=0;
+
+    virtual  ostream& afisare(ostream& out)const=0;
+
+};
+
+
+class SirGol: public exception
+{
+public:
+   virtual const char* what() const throw ()
+   {
+       return " Sirul de caractere este gol";
+   }
+
+} e;
+
+
+void copiereSir(char* a, char* b)
+{
+    if (b==nullptr)
+        throw e;
+
+    if (a!=nullptr)
+        delete[] a;
+    a=new char [strlen(b)+1];
+    strcpy(a,b);
+}
+
+
+
+void copiereSir(string a, string b)
+{
+
+    if(b.size()==0)
+        throw e;
+    a=b;
+}
+
+
+
+class Persoana:public IOinterface
+{   protected:
+    string CNP;
+public:
+    Persoana(string CNP="xxxxxxxxxxxx")
+    {
+        this->CNP=CNP;
+    }
+     Persoana()
+    {
+        this->CNP="xxxxxxxxxxxx";
+    }
+    Persoana(const Persoana &p)
+    {
+        this->CNP=p.CNP;
+    }
+    Persoana& operator =(const Persoana& p)
+    {
+        this->CNP=p.CNP;
+    }
+    friend istream& operator >>(istream& in,Persoana& p)
+    {
+        return p.citire(in);
+    }
+    friend ostream& operator<<(ostream& out,const Persoana& p)
+    {
+        return p.afisare(out);
+    }
+    istream& citire(istream& in)
+    {
+        cout<<"CNP: ";
+        in>>this->CNP;
+    return in;
+    }
+    ostream& afisare(ostream& out)const
+    {
+        out<<"CNP: "<<this->CNP<<" ";
+    return out;
+    }
+};
+
+
+
+class Angajat:virtual public Persoana
+{
+protected:
+    int experienta;
+public:
+    Angajat(string CNP,int experienta):Persoana(CNP)
+    {
+        this->experienta=experienta;
+    }
+    Angajat(const Angajat& a):Persoana(a)
+    {
+        this->experienta=a.experienta;
+    }
+    Angajat& operator=(const Angajat& a)
+    {
+        if(this!=&a)
+        {
+            Persoana::operator=(a);
+            this->experienta=a.experienta;
+        }
+    }
+    istream& citire(istream& in)
+    {
+        Persoana::citire(in);
+        cout<<"\nAni experienta: ";
+        in>>experienta;
+        return in;
+    }
+    ostream& afisare(ostream& out)
+    {
+        Persoana::afisare(out);
+        out<<"\nAni experienta: ";
+        out<<experienta;
+        return out;
+    }
+};
+
+
+template <class T,class U>
+class A
+{
+protected:
+    T x;
+    U y;
+public:
+    A(T x,U y)
+    {
+        this->x=x;
+        this->y=y;
+    }
+    A()
+    {
+        this->x=nullptr;
+        this->y=nullptr;
+    }
+    A(const A & a)
+    {
+        this->x=a.x;
+        this->y=a.y;
+    }
+    void setT(T x)
+    {
+        this->x=x;
+    }
+    T getT()
+    {
+        return this->x;
+    }
+    void setU(U y)
+    {
+        this->y=y;
+    }
+    U getU()
+    {
+        return this->y;
+    }
+};
+
+
+template <class T> void sortareCrescatoare(T a[], int n)
+{
+    int i,j;
+    for(i=1;i<n;i++)
+        for(j=i+1;j<=n;j++)
+        if(a[i]>a[j])
+        swap(a[i],a[j]);
+}
+
+
+template <class T> void sortareDescrescatoare(T a[], int n)
+{
+    int i,j;
+    for(i=1;i<n;i++)
+        for(j=i+1;j<=n;j++)
+        if(a[i]<a[j])
+        swap(a[i],a[j]);
+        }
+
+
+class Camera: public IOinterface
+
+{
+
+protected:
+
+    char* numeCamera;
+
+    string numarEtaj;
+
+    string telefonAngajat;
+
+    string numeRezervare;
+
+    const int idCamera;
+
+    static int  contorCamera;
+
+
+
+public:
+    int numarLocuri;
+
+
+    Camera(char* numeCamera=NULL, string numarEtaj="Anonim",string telefonAngajat="07XXXXXXXX",string numeRezervare="Nume Prenume", int numarLocuri=0):idCamera(contorCamera++)
+
+    {
+
+
+        if(numeCamera!=NULL)
+
+        {
+
+            this->numeCamera=new char[strlen(numeCamera)+1];
+
+            strcpy(this->numeCamera,numeCamera);
+
+        }
+
+        else
+
+        {
+
+            this->numeCamera=NULL;
+
+        }
+
+
+
+        this->numarEtaj=numarEtaj;
+
+        this->telefonAngajat=telefonAngajat;
+
+        this->numeRezervare=numeRezervare;
+
+        this->numarLocuri=numarLocuri;
+
+
+
+    }
+
+    Camera(const Camera& c):idCamera(contorCamera++)
+
+    {
+
+
+
+        if(c.numeCamera!=NULL)
+
+        {
+
+            this->numeCamera=new char[strlen(c.numeCamera)+1];
+
+            strcpy(this->numeCamera,c.numeCamera);
+
+        }
+
+        else
+
+        {
+
+            this->numeCamera=NULL;
+
+        }
+
+
+
+        this->numarEtaj=c.numarEtaj;
+
+        this->telefonAngajat=c.telefonAngajat;
+
+        this->numeRezervare=c.numeRezervare;
+
+        this->numarLocuri=c.numarLocuri;
+
+
+
+    }
+
+
+
+    Camera& operator=(const Camera& c)
+
+    {
+
+        if(this!=&c)
+
+        {
+
+
+
+            if(this->numeCamera!=NULL)
+
+            {
+
+                delete[] this->numeCamera;
+
+                this->numeCamera=NULL;
+
+            }
+
+
+            if(c.numeCamera!=NULL)
+
+            {
+
+                this->numeCamera=new char[strlen(c.numeCamera)+1];
+
+                strcpy(this->numeCamera,c.numeCamera);
+
+            }
+
+            else
+
+            {
+
+                this->numeCamera=NULL;
+
+            }
+
+
+
+            this->numarEtaj=c.numarEtaj;
+
+            this->telefonAngajat=c.telefonAngajat;
+
+            this->numeRezervare=c.numeRezervare;
+
+            this->numarLocuri=c.numarLocuri;
+
+
+
+        }
+
+        return *this;
+
+    }
+
+
+    friend istream& operator >>(istream& in, Camera& c)
+
+    {
+
+        return c.citire(in);
+
+    }
+
+    friend ostream& operator <<(ostream& out, const Camera& c)
+
+    {
+
+        return c.afisare(out);
+
+
+
+    }
+
+    istream& citire(istream& in)
+
+    {
+
+
+
+        cout<<"\nNumele camerei este: ";
+
+        char aux[100];
+
+        cin>> aux;
+        cout<<endl<<endl;
+
+        f<<"\n           Detalii camera "<<aux;
+
+        if(this->numeCamera!=NULL)
+
+            delete[] this->numeCamera;
+
+
+
+        this->numeCamera=new char[strlen(aux)+1];
+
+        strcpy(this->numeCamera,aux);
+
+
+
+        cout<<"\n Numarul etajului: ";
+
+        in>>this->numarEtaj;
+
+        f<<"\n Numarul etajului: ";
+
+        f<<this->numarEtaj;
+
+        f<<"\n Nume rezervare: ";
+
+        f<<this->numeRezervare;
+
+        cout<<"\n Numar de telefon: ";
+
+        in>>this->telefonAngajat;
+
+        cout<<"\n Numar locuri: ";
+
+        in>>this->numarLocuri;
+
+        f<<"\n Numar locuri: ";
+
+        f<<this->numarLocuri;
+
+
+        return in;
+
+    }
+
+    ostream& afisare(ostream& out)const
+
+    {
+
+        if(this->numeCamera!=NULL)
+
+        {
+            out<<"\nNumele camerei: "<<this->numeCamera;
+        }
+
+        out<<"\nNumar etaj: "<<this->numarEtaj;
+
+        out<<"\nNumar locuri: "<<this->numarLocuri;
+
+        return out;
+
+    }
+
+    //getter nume camera
+
+    char* getNumeCamera()
+
+    {
+
+        if(this->numeCamera !=NULL)
+
+            return this->numeCamera;
+
+        throw runtime_error("Accesati o zona de memorie nula");
+
+    }
+
+    string getNumarEtaj()
+
+    {
+
+        return this->numarEtaj;
+
+    }
+    string getTelefon()
+    {
+        return this->telefonAngajat;
+    }
+
+    string getNumeRezervare()
+    {
+        return this->numeRezervare;
+    }
+
+    int  getNumarLocuri()
+
+    {
+
+        return this->numarLocuri;
+
+    }
+    static int getContorCamera()
+    {
+        return contorCamera;
+    }
+
+
+    ~Camera()
+
+    {
+
+        if(this->numeCamera!=NULL)
+
+        {
+
+            delete[] this->numeCamera;
+
+            this->numeCamera=NULL;
+
+        }
+
+    }
+
+};
+
+class Dormitor: public virtual Camera
+
+{
+
+protected:
+
+    bool televizor;
+
+    bool aerConditionat;
+
+public:
+
+    Dormitor(char* numeCamera=NULL, string numarEtaj="Anonim", int numarLocuri=0,
+
+             bool televizor=true, bool aerConditionat=true
+
+            ):Camera(numeCamera,numarEtaj,telefonAngajat,numeRezervare,numarLocuri)
+
+    {
+
+
+
+        this->televizor=televizor;
+
+        this->aerConditionat=aerConditionat;
+
+
+
+    }
+
+    Dormitor(const Dormitor& d):Camera(d)
+
+    {
+
+
+
+        this->televizor=d.televizor;
+
+        this->aerConditionat=d.aerConditionat;
+
+
+
+    }
+
+    Dormitor& operator=(const Dormitor& d)
+    {
+
+        if(this!=&d)
+        {
+
+            Camera::operator=(d);
+
+            this->televizor=d.televizor;
+
+            this->aerConditionat=d.aerConditionat;
+
+
+
+        }
+
+        return * this;
+
+    }
+
+    istream& citire(istream& in)
+    {
+
+
+
+        Camera::citire(in);
+
+        cout<<"\nAre televizor [1/0]: ";
+        in>>this->televizor;
+
+        if(this->televizor==1)
+            f<<"\n Are televizor.";
+        else     f<<"\n Nu are televizor.";
+
+        cout<<"\nAre aer conditionat [1/0]: ";
+        in>>this->aerConditionat;
+
+        if(this->aerConditionat==1)
+            f<<"\n Are aer conditionat.";
+        else     f<<"\n Nu are aer conditionat.";
+
+        return in;
+
+    }
+
+    ostream& afisare(ostream& out) const
+    {
+
+        Camera::afisare(out);
+
+        if(this->televizor)
+
+            out<<"\nAre televizor";
+
+        else out<<"\nNu are televizor";
+
+        if(this->aerConditionat)
+
+            out<<"\nAre aer conditionat";
+
+        else out<<"\nNu are aer conditionat";
+
+        return out;
+
+    }
+
+    ~Dormitor() {}
+
+
+
+
+
+};
+
+class Sala_Conferinte: public virtual Camera
+{
+
+protected:
+
+    int proiector;
+
+public:
+
+
+
+    Sala_Conferinte(char* numeCamera=NULL, string numarEtaj="Anonim", int numarLocuri=0,
+
+                    int proiector=0
+
+                   ):Camera(numeCamera,numarEtaj,telefonAngajat,numeRezervare,numarLocuri)
+
+    {
+
+
+
+        this->proiector=proiector;
+
+
+
+    }
+
+    Sala_Conferinte(const Sala_Conferinte& sc):Camera(sc)
+
+    {
+
+
+
+
+
+        this->proiector=sc.proiector;
+
+
+
+    }
+
+    Sala_Conferinte& operator=(const Sala_Conferinte& sc)
+    {
+
+        if(this!=&sc)
+        {
+
+            Camera::operator=(sc);
+
+            this->proiector=sc.proiector;
+
+
+
+        }
+
+        return * this;
+
+    }
+
+    istream& citire(istream& in)
+    {
+
+
+
+        Camera::citire(in);
+
+        cout<<"\nAre proiector[1/0] : ";
+        in>>this->proiector;
+
+        if(this->proiector==1)
+            f<<"\nAre proiector";
+        else f<<"\nNu are proiector";
+
+        return in;
+
+    }
+
+    ostream& afisare(ostream& out) const
+    {
+
+        Camera::afisare(out);
+       if(this->proiector==1)
+            cout<<"\nAre proiector";
+        else cout<<"\nNu are proiector";
+
+
+        return out;
+
+    }
+
+    ~Sala_Conferinte() {}
+
+
+
+
+
+
+
+};
+
+class Apartament: public Sala_Conferinte,
+
+    public Dormitor
+{
+
+private:
+
+    bool bucatarie;
+
+    int nrDormitoare;
+
+public:
+
+    Apartament(char* numeCamera=NULL, string numarEtaj="Anonim", int numarLocuri=0,
+
+               bool televizor=true, bool aerConditionat=true,
+
+               int numarCalculatoare=0,
+
+               bool bucatarie=false, int nrDormitoare=1
+
+              )
+
+        :Camera(numeCamera,numarEtaj,telefonAngajat,numeRezervare,numarLocuri),
+
+         Dormitor(numeCamera,numarEtaj,numarLocuri,televizor,aerConditionat),
+
+         Sala_Conferinte(numeCamera,numarEtaj,numarLocuri,proiector)
+    {
+
+
+
+        this->nrDormitoare=nrDormitoare;
+
+        this->bucatarie=bucatarie;
+
+    }
+
+    Apartament(const Apartament& a):
+
+        Camera(a),
+
+        Dormitor(a),
+
+        Sala_Conferinte(a)
+    {
+
+
+
+        this->nrDormitoare=a.nrDormitoare;
+
+        this->bucatarie=a.bucatarie;
+
+
+
+    }
+
+    Apartament& operator=(const Apartament& a)
+    {
+
+
+
+        if(this!=&a)
+        {
+
+            Dormitor::operator=(a);
+
+            Sala_Conferinte::operator=(a);
+
+            this->nrDormitoare=a.nrDormitoare;
+
+            this->bucatarie=a.bucatarie;
+
+        }
+
+        return *this;
+
+
+
+    }
+
+    istream& citire(istream& in)
+    {
+
+        Dormitor::citire(in);
+
+        cout<<"\nAre proiector[1/0]: ";
+        in>>this->proiector;
+
+         if(this->proiector==1)
+            f<<"\nAre proiector";
+        else f<<"\nNu are proiector";
+
+        cout<<"\nAre bucatarie[1/0]: ";
+        in>>this->bucatarie;
+
+        if(this->bucatarie==1)
+            f<<"\nAre bucatarie";
+        else f<<"\nNu are bucatarie";
+
+        cout<<"\nNumar dormitoare: ";
+        in>>this->nrDormitoare;
+
+        f<<"\nAre "<<this->nrDormitoare<<" dormitoare";
+
+        return in;
+
+    }
+
+    ostream& afisare(ostream& out)const
+    {
+
+
+        Dormitor::afisare(out);
+        if(this->proiector==1)
+            out<<"\nAre proiector";
+        else out<<"\nNu are proiector";
+        if(this->bucatarie==1)
+            out<<"\nAre bucatarie";
+        else out<<"\nNu are bucatarie";
+
+        out<<"\nNumar dormitoare: "<<this->nrDormitoare;
+
+        return out;
+
+    }
+
+    float getCost()
+    {
+
+        float cost=0;
+        if(bucatarie)
+            cost+=100;
+        if(televizor)
+            cost+=150;
+        if(aerConditionat)
+            cost+=10.5;
+
+        return cost;
+    }
+
+};
+
+class Rezervare
+{
+private:
+    Camera* camera;
+    string dataCI;
+    string dataCO;
+public:
+    Rezervare()
+    {
+        this->camera=NULL;
+        this->dataCI="dd.mm.yyyy";
+        this->dataCO="dd.mm.yyyy";
+    }
+    Rezervare(string dataCI, string dataCO)
+    {
+        this->dataCI=dataCI;
+        this->dataCO=dataCO;
+    }
+    void SetCamera(Camera* c)
+    {
+
+        this->camera=c;
+    }
+
+    friend ostream& operator <<(ostream& out, Rezervare& p)
+    {
+        out<<"\nData Check-In: "<<p.dataCI;
+        out<<"\nCheck-Out: "<<p.dataCO;
+        out<<"\nCamera: \n"<<*p.camera;
+        return out;
+    }
+    bool operator == (string a)
+    {
+        return a==this->dataCI;
+    }
+    Camera* getCamera()
+    {
+        return this->camera;
+    }
+};
+class Hotel
+{
+private:
+    string nume;
+    string adresa;
+    list<Camera*> listaCamere; //polimorfism
+    vector<Rezervare> progamCamere;
+    set<string>numereTelefon;
+    map<int,string>numeClienti;
+public:
+
+    Hotel()
+    {
+
+        this->nume="anonim";
+        this->adresa="anonim";
+        this->listaCamere= {};
+        this->progamCamere= {};
+        this->numereTelefon={};
+    }
+
+    friend istream &operator >> (istream& in, Hotel& h)
+    {
+         cout<<"\nIntroduceti datele hotelului. "<<endl;
+        cout<<"\nNume: ";
+        in>>h.nume;
+        cout<<"\nAdresa: ";
+        in>>h.adresa;
+        int k=1;
+        while(k==1)
+        {
+
+            int comanda;
+            cout<<"\n1. Adauga Sala Conferinte";
+            cout<<"\n2. Adauga Dormitor";
+            cout<<"\n3. Adauga Apartament";
+            cout<<"\n4. Vezi meniul avansat\n";
+            cin>> comanda;
+            switch(comanda)
+            {
+            case 1:
+            {   Sala_Conferinte *sc=new Sala_Conferinte;
+                int x;
+                h.listaCamere.push_back(sc);
+                h.listaCamere.back()->citire(in);
+                h.numereTelefon.insert(sc->getTelefon());
+                x=sc->getContorCamera();
+                h.numeClienti.insert(pair<int,string>(x,sc->getNumeRezervare()));
+                break;
+            }
+            case 2:
+            {   Dormitor *d=new Dormitor;
+                h.listaCamere.push_back(d);
+                h.listaCamere.back()->citire(in);
+                h.numereTelefon.insert(d->getTelefon());
+                int x;
+                x=d->getContorCamera();
+                h.numeClienti.insert(pair<int,string>(x,d->getNumeRezervare()));
+                break;
+            }
+            case 3:
+                {Apartament *a=new Apartament;
+                h.listaCamere.push_back(a);
+                h.listaCamere.back()->citire(in);
+                h.numereTelefon.insert(a->getTelefon());
+                int x;
+                x=a->getContorCamera();
+                h.numeClienti.insert(pair<int,string>(x,a->getNumeRezervare()));
+
+                break;}
+            case 4:
+                k=0;
+                break;
+
+
+            }
+        }
+
+        return in;
+    }
+
+
+    friend ostream& operator<< (ostream& out,  Hotel& h)
+    {
+
+        out<<"\nNume: "<<h.nume;
+        out<<"\nAdresa: "<<h.adresa;
+        out<<"Lista Camere: \n";
+
+        list<Camera*>::iterator it;
+        for(it=h.listaCamere.begin(); it!=h.listaCamere.end(); it++)
+            out<<**it<<endl;
+
+        for(int i=0; i<h.progamCamere.size(); i++)
+            out<<h.progamCamere[i];
+
+        return out;
+    }
+
+    void addRezervare()
+    {
+        string dataCI;
+        string dataCO;
+        int index;
+        cout<<"\nData Check-In: ";
+        cin>>dataCI;
+        cout<<"\nData Check-Out: ";
+        cin>>dataCO;
+        Rezervare p(dataCI,dataCO);
+
+        list<Camera*>::iterator it;
+        for(it=listaCamere.begin(); it!=listaCamere.end(); it++)
+            cout<<**it<<endl;
+        cout<<"\nAlegeti Camera:\n ";
+        cin>>index;
+
+        list<Camera*>::iterator it2;
+        it2=listaCamere.begin();
+        advance(it2,index+1);
+        p.SetCamera(*it2);
+        this->progamCamere.push_back(p);
+        cout<<"\nCost: ";
+
+        cout<<(dynamic_cast<Apartament&>(*progamCamere.back().getCamera())).getCost();
+
+    }
+
+    void addCamera()
+    {
+
+        int comanda;
+       cout<<"\n1. Adauga Sala Conferinte";
+            cout<<"\n2. Adauga Dormitor";
+            cout<<"\n3. Adauga Apartament";
+        cin>> comanda;
+        switch(comanda)
+        {
+        case 1:
+        {   Sala_Conferinte *sc=new Sala_Conferinte;
+            listaCamere.push_back(sc);
+            listaCamere.back()->citire(cin);
+            numereTelefon.insert(sc->getTelefon());
+
+            break;
+        }
+        case 2:
+        {   Dormitor *d=new Dormitor;
+            listaCamere.push_back(d);
+            listaCamere.back()->citire(cin);
+            numereTelefon.insert(d->getTelefon());
+            break;
+        }
+        case 3:
+            Apartament *a=new Apartament;
+            listaCamere.push_back(a);
+            listaCamere.back()->citire(cin);
+            numereTelefon.insert(a->getTelefon());
+            break;
+
+        }
+    }
+
+    void afiseazaCamere()
+    {
+
+        cout<<"Camerele sunt: \n";
+        list<Camera*>::iterator it;
+        for(it=listaCamere.begin(); it!=listaCamere.end(); it++)
+            {cout<<**it<<endl;
+            }
+    }
+
+    void afiseazaRezervari(string a)
+    {
+
+        for(int i=0; i<progamCamere.size(); i++)
+            if(progamCamere[i]==a)
+                cout<<*(progamCamere[i].getCamera())<<endl;
+    }
+    void stergeRezervare(int index)
+    {
+
+        progamCamere.erase(progamCamere.begin()+index);
+
+    }
+
+
+
+};
+int Camera::contorCamera=1000;
+class MeniuInteractiv
+{
+private:
+    static MeniuInteractiv *obiect;
+
+    MeniuInteractiv()=default;
+    Hotel a;
+public:
+    static MeniuInteractiv* getInstance()
+    {
+        if(!obiect)
+            obiect=new MeniuInteractiv();
+
+
+        return obiect;
+    }
+
+    void start()
+    {
+
+
+
+        cin>>a;
+
+        int k=1;
+        while(k==1)
+        {
+
+            cout<<"\n1. Adauga camera";
+            cout<<"\n2. Afiseaza Lista camere";
+            cout<<"\n3. Afisaza Lista camere rezervate dintr-o zi";
+            cout<<"\n4. Adauga o rezervare";
+            cout<<"\n5. Sterge rezervare\n";
+
+            int comanda;
+            cin>>comanda;
+            switch(comanda)
+            {
+            case 1:
+            {
+                a.addCamera();
+                system("c");
+                break;
+            }
+            case 2:
+            {
+                system("c");
+                a.afiseazaCamere();
+
+                break;
+            }
+            case 3:
+            {
+
+                system("c");
+                string data;
+                cout<<"\nAlegeti data:\n";
+                cin>>data;
+                a.afiseazaRezervari(data);
+
+                break;
+            }
+
+
+            case 4:
+            {
+                try
+                {
+                    a.addRezervare();
+                }
+                catch(exception& e)
+                {
+                    cout<<e.what();
+                }
+                break;
+            }
+            case 5:
+            {   cout<<"\nTastati numarul rezervarii: ";
+                int index;
+                cin>>index;
+                a.stergeRezervare(index);
+                break;
+            }
+            }
+        }
+
+    }
+};
+
+MeniuInteractiv* MeniuInteractiv::obiect=0;
+
+int main()
+{    int i1,n,i;
+char s1,s2;
+     string s3;
+     cout<<"Introduceti numarul clientilor: ";
+    cin>>n;
+    cout<<endl;
+    int varsteClienti[n+1];
+    for(i=1;i<=n;i++)
+    {cout<<"Introduceti datele clientului: \n";
+    cout<<"Nume: ";
+    cin>>s3;
+    cout<<endl;
+    cout<<"Varsta: ";
+    cin>>i1;
+    A<string, int>c1(s3,i1);
+    cout<<endl;
+    varsteClienti[i]=c1.getU();
+    }
+    sortareCrescatoare(varsteClienti,n);
+    cout<<"Tastati 1 pentru conectare angajat.\n";
+    cout<<"Tastati 2 pentru afisare varste clienti in ordine crescatoare.\n";
+    cout<<"Tastati 3 pentru afisare varste clienti in ordine descrescatoare.\n";
+    cout<<"Tastati 4 pentru conectarea avansata.\n";
+    cout<<"Tastati 5 pentru a iesi.\n";
+    int z;
+    cin>>z;
+    if(z==1)
+    {
+
+    cout<<"Introduceti datele angajatului: \n";
+    cout<<"Initiala nume: ";
+    cin>>s1;
+    char*a;
+    a=new char[100];
+    strcpy(a,&s1);
+    cout<<endl;
+    cout<<"Initiala prenume: ";
+    cin>>s2;
+    char*b;
+    b=new char[100];
+    strcpy(b,&s2);
+
+    A<char, char>ang(s1,s2);
+    cout<<endl;
+
+    try {
+    copiereSir(a,nullptr);
+    cout<<*a;
+  }
+  catch(SirGol& e)
+  {
+
+      cout<<e.what();
+  }
+
+  try{
+
+    string e=":)";
+    string r=":(";
+    copiereSir(a,r);
+    cout<<endl<<e<<endl;
+    throw runtime_error("eroare");
+
+
+  }
+  catch(SirGol& e)
+  {
+
+      cout<<e.what();
+  }
+  catch(...){
+  cout<<"Eroare necunoscuta";
+  }
+
+    cout<<"\n***********************************************************\n";
+
+
+    }
+    if(z==2)
+    {
+        sortareCrescatoare(varsteClienti,n);
+        for(i=1;i<=n;i++)
+        cout<<varsteClienti[i]<<" ";
+        cout<<endl;
+    }
+    else if(z==3)
+    {
+        sortareDescrescatoare(varsteClienti,n);
+        for(i=1;i<=n;i++)
+        cout<<varsteClienti[i]<<" ";
+        cout<<endl;
+
+    }
+    else if(z==4)
+    {MeniuInteractiv *meniu=MeniuInteractiv::getInstance();
+    cout<<meniu<<endl;
+    meniu->start();
+    MeniuInteractiv *meniu2=MeniuInteractiv::getInstance();
+    cout<<meniu2;
+meniu2->start();
+    }
+    else if(z==5)
+        return 0;
+
+    return 0;
+
+
+}
