@@ -1,0 +1,266 @@
+#include<iostream>
+#include<cstring>
+#include<list>
+using namespace std;
+
+class IOinterface
+{
+   virtual istream& citire(istream& in)=0;
+   virtual ostream& afisare(ostream& out)const=0;
+
+};
+
+class produs:public IOinterface
+{
+   protected:
+    string nume;
+    bool perisabil;
+    int promotie;
+    string termenValabilitate;
+    double pret;
+    int cantitate;
+    string data;
+
+   public:
+      produs()
+      {
+          this->nume="numeProdus";
+          this->perisabil=0;
+          this->promotie=0;
+          this->termenValabilitate="0 zile";
+          this->pret=0;
+          this->cantitate=0;
+      }
+      produs(string nume,int cantitate,double pret,bool perisabil,string termenValabilitate,int promotie)
+      {
+          this->nume=nume;
+          this->perisabil=perisabil;
+          this->promotie=promotie;
+          this->termenValabilitate=termenValabilitate;
+          this->pret=pret;
+          this->cantitate=cantitate;
+      }
+      produs(const produs& p)
+      {
+           this->nume=p.nume;
+          this->perisabil=p.perisabil;
+          this->promotie=p.promotie;
+          this->termenValabilitate=p.termenValabilitate;
+          this->pret=p.pret;
+          this->cantitate=p.cantitate;
+
+      }
+      produs& operator=(const produs& p)
+      {
+          if(&p!=NULL)
+          {
+          this->nume=p.nume;
+          this->perisabil=p.perisabil;
+          this->promotie=p.promotie;
+          this->termenValabilitate=p.termenValabilitate;
+          this->pret=p.pret;
+          this->cantitate=p.cantitate;
+
+          }
+          return *this;
+      }
+      friend istream& operator>>(istream& in,produs& p)
+      {
+          return p.citire(in);
+      }
+      istream& citire(istream& in)
+      {
+          cout<<"\nNume: ";
+          in>>this->nume;
+          cout<<"\nPret: ";
+          in>>this->pret;
+          cout<<"\nCantitate: ";
+          in>>this->cantitate;
+          cout<<"\nPerisabil[1/0]: ";
+          in>>this->perisabil;
+          cout<<"\nProcent promotie: ";
+          in>>this->promotie;
+          return in;
+      }
+      friend ostream& operator<<(ostream& out,const produs& p)
+      {
+          return p.afisare(out);
+      }
+      ostream& afisare(ostream& out) const
+      {
+          out<<"\nNume: ";
+          out<<this->nume;
+          out<<"\nPret: ";
+          out<<this->pret;
+          out<<"\nCantitate: ";
+          out<<this->cantitate;
+          out<<"\nPerisabil[1/0]: ";
+          out<<this->perisabil;
+          out<<"\nProcent promotie: ";
+          out<<this->promotie;
+      return out;
+      }
+     void setValabilitate(string termenValabilitate,string data)
+     {
+         this->termenValabilitate=termenValabilitate;
+         this->data=data;
+     }
+     bool getPer()
+     {
+         return this->perisabil;
+     }
+     string getTermen()
+     {
+         return this->termenValabilitate;
+     }
+
+     string getData()
+     {
+         return this->data;
+     }
+
+      ~produs()
+      {
+
+      }
+};
+
+
+class pVolGr:public produs
+{
+protected:
+      string unitateMasura;
+    public:
+    pVolGr():produs()
+      {
+          this->unitateMasura="unitateMasura";
+      }
+      pVolGr(string unitateMasura):produs(nume,cantitate,pret,perisabil, termenValabilitate, promotie)
+      {
+        this->unitateMasura=unitateMasura;
+      }
+      pVolGr(const pVolGr& p):produs(p)
+      {
+       this->unitateMasura=p.unitateMasura;
+      }
+      pVolGr& operator=(const pVolGr& p)
+      {
+          if(&p!=NULL)
+          {
+              produs::operator=(p);
+              this->unitateMasura=p.unitateMasura;
+          }
+          return *this;
+      }
+      istream& citire(istream& in)
+      {
+          produs::citire(in);
+          cout<<"\nUnitate de masura: ";
+          in>>this->unitateMasura;
+          return in;
+      }
+
+      ostream& afisare(ostream& out) const
+      {
+     produs::afisare(out);
+          out<<"\nUnitate de masura: ";
+          out<<this->unitateMasura;
+      return out;
+      }
+
+      ~pVolGr()
+      {
+
+      }
+
+
+  };
+
+class magazin
+{
+    protected:
+       list<produs*>lot;
+    public:
+       magazin()
+       {
+           lot={};
+       }
+       void adaugaProdus()
+       {
+           int x;
+           cout<<"\nTastati 1 pentru a adauga un produs la bucata.";
+           cout<<"\nTastati 2 pentru a adauga un produs cu unitate de masura.";
+           cout<<endl;
+           cin>>x;
+           int k=1;
+           switch(x)
+
+           {case 1:
+            {
+                produs *p=new produs;
+                lot.push_back(p);
+                lot.back()->citire(cin);
+                if(lot.back()->getPer()==1)
+                {   string p,v;
+                    cout<<"\nData: ";
+                    cin>>v;
+                    cout<<"\nPerioada de valabilitate(in zile): ";
+                    cin>>p;
+                    lot.back()->setValabilitate(p,v);
+                }
+                break;
+            }
+           case 2:
+            {
+
+                pVolGr *p=new pVolGr;
+                lot.push_back(p);
+                lot.back()->citire(cin);
+                if(lot.back()->getPer()==1)
+                {   string p,v;
+                    cout<<"\nData: ";
+                    cin>>v;
+                    cout<<"\nPerioada de valabilitate(in zile): ";
+                    cin>>p;
+                    lot.back()->setValabilitate(p,v);
+                }
+                break;
+            }
+           }
+       }
+       void afiseazaProduse()
+       {
+           cout<<"\nProdusele sunt: \n";
+           list<produs*>::iterator i;
+           for(i=lot.begin();i!=lot.end();i++)
+            {
+                cout<<**i;
+
+
+            }
+       }
+
+
+};
+class vanzator
+{  protected:
+    magazin m;
+   public:
+      void afisProduse()
+      {
+        m.afiseazaProduse();
+      }
+      void adaugaProdus()
+      {
+        m.adaugaProdus();
+      }
+
+};
+int main()
+{
+   vanzator v;
+   v.adaugaProdus();
+   v.adaugaProdus();
+   v.afisProduse();
+
+}
