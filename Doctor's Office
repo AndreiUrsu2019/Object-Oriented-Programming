@@ -1,0 +1,384 @@
+#include<iostream>
+#include<cstring>
+#include<list>
+using namespace std;
+
+class IOinterface
+{
+    virtual istream& citire(istream& in)=0;
+    virtual ostream& afisare(ostream& out)const=0;
+
+};
+class persoana:public IOinterface
+{
+protected:
+    string nume,prenume;
+    char adresa[100];
+    int varsta;
+    int colesterol;
+    int tensiune;
+    string dataAnalize;
+public:
+    persoana()
+    {
+        this->nume="nume";
+        this->prenume="prenume";
+        this->varsta=0;
+        strcpy(this->adresa,"adresa");
+    }
+
+    persoana(string nume,string prenume,int varsta,char adresa[100])
+    {
+        this->nume=nume;
+        this->prenume=prenume;
+        this->varsta=varsta;
+        strcpy(this->adresa,adresa);
+    }
+
+    persoana(const persoana& p)
+    {
+        this->nume=p.nume;
+        this->prenume=p.prenume;
+        this->varsta=p.varsta;
+        strcpy(this->adresa,p.adresa);
+    }
+
+    persoana& operator=(const persoana& p)
+    {
+        if(&p!=NULL)
+        {
+            this->nume=p.nume;
+            this->prenume=p.prenume;
+            this->varsta=p.varsta;
+            strcpy(this->adresa,p.adresa);
+        }
+        return*this;
+    }
+
+    friend istream& operator>>(istream& in,persoana& p)
+    {
+        return p.citire(in);
+    }
+
+    friend ostream& operator<<(ostream& out,persoana& p)
+    {
+        return p.afisare(out);
+    }
+
+    istream& citire(istream& in)
+    {
+        cout<<"\nNume: ";
+        in>>this->nume;
+        cout<<"\nPrenume: ";
+        in>>this->prenume;
+        cout<<"\nVarsta: ";
+        in>>this->varsta;
+        cout<<"\nAdresa: ";
+        in.getline(adresa,100);
+        return in;
+    }
+
+    ostream& afisare(ostream& out)const
+    {
+        out<<"\nNume: ";
+        out<<this->nume;
+        out<<"\nPrenume: ";
+        out<<this->prenume;
+        out<<"\nVarsta: ";
+        out<<this->varsta;
+        out<<"\nAdresa: ";
+        out<<adresa;
+        return out;
+    }
+
+    int getTensiune()
+    {
+        return this->tensiune;
+    }
+
+    int getColesterol()
+    {
+        return this->colesterol;
+    }
+
+    void setTensiune(int t)
+    {
+        this->tensiune=t;
+    }
+
+    void setColesterol(int c)
+    {
+       this->colesterol=c;
+    }
+
+     string getData()
+     {
+         return this->dataAnalize;
+     }
+
+    void setData(string d)
+    {
+      this->dataAnalize=d;
+    }
+    ~persoana()
+    {
+
+    }
+};
+class copil:public persoana
+{
+protected:
+    string numeMama,prenumeMama,numeTata,prenumeTata,antecedente,proteina;
+
+  public:
+     copil():persoana()
+    {
+        this->numeMama=" ";
+        this->prenumeMama=" ";
+        this->prenumeTata=" ";
+        this->numeTata=" ";
+        this->antecedente="nu";
+        this->proteina=" ";
+    }
+
+    copil(string numeMama,string numeTata,string prenumeMama,string prenumeTata,string antecedente,string proteina):persoana(nume,prenume,varsta,adresa)
+    {
+        this->numeMama=numeMama;
+        this->prenumeMama=prenumeMama;
+        this->prenumeTata=prenumeTata;
+        this->numeTata=numeTata;
+        this->antecedente=antecedente;
+        this->proteina=proteina;
+    }
+
+    copil(const copil& p):persoana(p)
+    {
+        this->numeMama=p.numeMama;
+        this->prenumeMama=p.prenumeMama;
+        this->prenumeTata=p.prenumeTata;
+        this->numeTata=numeTata;
+        this->antecedente=p.antecedente;
+        this->proteina=p.proteina;
+    }
+
+    copil& operator=(const copil& p)
+    {
+        persoana::operator=(p);
+        if(&p!=NULL)
+        {
+        this->numeMama=p.numeMama;
+        this->prenumeMama=p.prenumeMama;
+        this->prenumeTata=p.prenumeTata;
+        this->numeTata=numeTata;
+        this->antecedente=p.antecedente;
+        this->proteina=p.proteina;
+    }
+        return*this;
+    }
+
+    istream& citire(istream& in)
+    {
+        persoana::citire(in);
+        cout<<"\nNume mama: ";
+        in>>this->numeMama;
+        cout<<"\nPrenume mama: ";
+        in>>this->prenumeMama;
+        cout<<"\nNume tata: ";
+        in>>this->prenumeTata;
+        cout<<"\Prenume tata:";
+        in>>this->prenumeTata;
+        cout<<"\nAntecedente in familie[da/nu]: ";
+        in>>this->antecedente;
+
+        return in;
+    }
+
+    ostream& afisare(ostream& out)const
+    {
+        persoana::afisare(out);
+
+        out<<"\nNume mama: ";
+        out<<this->numeMama;
+        out<<"\nPrenume mama: ";
+        out<<this->prenumeMama;
+        out<<"\nNume tata: ";
+        out<<this->prenumeTata;
+        out<<"\Prenume tata:";
+        out<<this->prenumeTata;
+        out<<"\nAntecedente in familie[da/nu]: ";
+        out<<this->antecedente;
+
+        return out;
+    }
+
+    ~copil()
+    {
+
+    }
+};
+
+class adult40p:public persoana
+{
+  protected:
+      string fumator;
+    string sedentarism;
+
+  public:
+     adult40p():persoana()
+    {
+        this->fumator="nu";
+        this->sedentarism="scazut";
+    }
+
+    adult40p(string fumator,string sedentarism):persoana(nume,prenume,varsta,adresa)
+    {
+        this->fumator=fumator;
+        this->sedentarism=sedentarism;
+    }
+
+    adult40p(const adult40p& p):persoana(p)
+    {
+        this->fumator=p.fumator;
+        this->sedentarism=p.sedentarism;
+    }
+
+    adult40p& operator=(const adult40p& p)
+    {
+        persoana::operator=(p);
+        if(&p!=NULL)
+        {
+        this->fumator=p.fumator;
+        this->sedentarism=p.sedentarism;
+    }
+        return*this;
+    }
+
+    istream& citire(istream& in)
+    {
+        persoana::citire(in);
+        cout<<"\nFumator[da/nu]: ";
+        in>>this->fumator;
+        cout<<"\nSedentarism[scazut/mediu/ridicat]: ";
+        in>>this->sedentarism;
+
+        return in;
+    }
+
+    ostream& afisare(ostream& out)const
+    {
+        persoana::afisare(out);
+        out<<"\nFumator[da/nu]: ";
+        out<<this->fumator;
+        out<<"\nSedentarism[scazut/mediu/ridicat]: ";
+        out<<this->sedentarism;
+        return out;
+    }
+
+    ~adult40p()
+    {
+
+    }
+
+
+};
+
+class cabinet
+{  protected:
+    list<persoana*>pacienti;
+
+   public:
+    void citirePacienti()
+    {
+       cout<<"\nIntroduceti numarul pacientilor: ";
+       int n;
+       cin>>n;
+       for(int i=1;i<=n;i++)
+       {
+         cout<<"\nTastati 1 pentru a introduce un copil.\nTastati 2 pentru a introduce un adult sub 40 de ani.\nTastati 3 pentru a introduce un adult peste 40 de ani";
+         cout<<endl;
+         int x;
+         cin>>x;
+         switch(x)
+         {
+         case 1:
+            {
+              copil* c=new copil;
+              pacienti.push_back(c);
+              pacienti.back()->citire(cin);
+              cout<<"\nData: ";
+              string s;
+              cin>>s;
+              pacienti.back()->setData(s);
+              break;
+            }
+         case 2:
+            {
+                persoana* p=new persoana;
+              pacienti.push_back(p);
+              pacienti.back()->citire(cin);
+              cout<<"\nData: ";
+              string s;
+              cin>>s;
+              pacienti.back()->setData(s);
+              cout<<"\nColesterol: ";
+              int x;
+              cin>>x;
+              pacienti.back()->setColesterol(x);
+              cout<<"\nTensiune: ";
+              cin>>x;
+              pacienti.back()->setTensiune(x);
+                break;
+            }
+         case 3:
+            {
+            adult40p* a=new adult40p;
+              pacienti.push_back(a);
+              pacienti.back()->citire(cin);
+              cout<<"\nData: ";
+              string s;
+              cin>>s;
+              pacienti.back()->setData(s);
+              cout<<"\nColesterol: ";
+              int x;
+              cin>>x;
+              pacienti.back()->setColesterol(x);
+              cout<<"\nTensiune: ";
+              cin>>x;
+              pacienti.back()->setTensiune(x);
+                break; }
+         }
+
+       }
+
+    }
+    void afisInfo()
+    {
+        list<persoana*>::iterator it;
+        for(it=pacienti.begin();it!=pacienti.end();it++)
+            cout<<**it<<endl;
+    }
+
+
+};
+
+class medic
+{
+  protected:
+    cabinet c;
+  public:
+    void afisPacienti()
+    {
+        c.afisInfo();
+    }
+    void cPacienti()
+    {
+        c.citirePacienti();
+    }
+};
+
+int main()
+{
+  medic m;
+  m.cPacienti();
+  m.afisPacienti();
+}
