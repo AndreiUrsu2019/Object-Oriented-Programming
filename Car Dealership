@@ -1,0 +1,503 @@
+#include<iostream>
+#include<cstring>
+#include<cmath>
+#include<list>
+
+using namespace std;
+
+class IOinterface
+{
+public:
+    virtual istream& citire(istream& in)=0;
+    virtual ostream& afisare(ostream& out)const =0;
+};
+
+class masina
+{
+protected:
+    int an_productie;
+    string nume;
+    string model;
+    double v_max;
+    double greutate;
+
+public:
+    masina()
+    {
+        this->an_productie=9999;
+        this->nume="nume_masina";
+        this->model="model_masina";
+        this->v_max=0;
+        this->greutate=0;
+    }
+
+    masina(int an_productie,string nume,string model,double v_max,double greutate)
+    {
+        this->an_productie=an_productie;
+        this->nume=nume;
+        this->model=model;
+        this->v_max=v_max;
+        this->greutate=greutate;
+    }
+    masina(const masina& m)
+    {
+        this->an_productie=m.an_productie;
+        this->nume=m.nume;
+        this->model=m.model;
+        this->v_max=m.v_max;
+        this->greutate=m.greutate;
+    }
+    masina& operator =(const masina& m)
+    {
+        if(this!=&m)
+        {
+            this->an_productie=m.an_productie;
+        this->nume=m.nume;
+        this->model=m.model;
+        this->v_max=m.v_max;
+        this->greutate=m.greutate;
+        }
+        return *this;
+
+    }
+    friend istream& operator>>(istream& in,masina& m)
+    {
+        return m.citire(in);
+    }
+
+    istream& citire(istream& in)
+    {
+        cout<<"\nNume: ";
+        in>>this->nume;
+        cout<<"\nModel: ";
+        in>>this->model;
+        cout<<"\nViteza maxima: ";
+        in>>this->v_max;
+        cout<<"\nGreutate: ";
+        in>>this->greutate;
+
+        return in;
+    }
+
+    friend ostream& operator<<(ostream& out,masina& m)
+    {
+        return m.afisare(out);
+    }
+    ostream& afisare(ostream& out)const
+    {
+        out<<"\nNume: ";
+        out<<this->nume;
+        out<<"\nModel: ";
+        out<<this->model;
+        out<<"\nViteza maxima: ";
+        out<<this->v_max;
+        out<<"\nGreutate: ";
+        out<<this->greutate;
+
+        return out;
+    }
+
+    virtual double autonomie()=0;
+
+    ~masina()
+    {
+
+    }
+};
+
+class fosil:public virtual masina
+{
+    protected:
+
+    string tip_rezervor;
+    double c_rezervor;
+
+    public:
+
+   fosil():masina(an_productie,nume,model,v_max,greutate)
+   {
+       this->tip_rezervor="necunoscut";
+       this->c_rezervor=0;
+   }
+
+   fosil(string tip_rezervor,double c_rezervor):masina(an_productie,nume,model,v_max,greutate)
+   {
+       this->tip_rezervor=tip_rezervor;
+       this->c_rezervor=c_rezervor;
+   }
+
+   fosil (const fosil& f):masina(f)
+   {
+       this->tip_rezervor=f.tip_rezervor;
+       this->c_rezervor=f.c_rezervor;
+   }
+
+   fosil& operator=(const fosil& f)
+   {
+       if(this!=&f)
+       {
+           masina::operator=(f);
+           this->tip_rezervor=f.tip_rezervor;
+       this->c_rezervor=f.c_rezervor;
+
+       }
+       return* this;
+   }
+   istream& citire(istream& in)
+   {
+       masina::citire(in);
+       cout<<"\nTipul rezervorului: ";
+       in>>this->tip_rezervor;
+       cout<<"\nCapacitatea rezervorului: ";
+       in>>this->c_rezervor;
+
+       return in;
+   }
+   ostream& afisare(ostream& out)
+   {
+       masina::afisare(out);
+       out<<"\nTipul rezervorului: ";
+       out<<this->tip_rezervor;
+       out<<"\nCapacitatea rezervorului: ";
+       out<<this->c_rezervor;
+
+       return out;
+   }
+
+    double autonomie()
+    {
+        return (this->c_rezervor)/(sqrt(this->greutate));
+    }
+    ~fosil()
+    {
+
+    }
+};
+
+class electric:public virtual masina
+{
+    protected:
+
+    double c_baterie;
+
+    public:
+
+   electric():masina(an_productie,nume,model,v_max,greutate)
+   {
+       this->c_baterie=0;
+   }
+
+   electric(double c_baterie):masina(an_productie,nume,model,v_max,greutate)
+   {
+       this->c_baterie=c_baterie;
+   }
+
+   electric (const electric& f):masina(f)
+   {
+       this->c_baterie=f.c_baterie;
+   }
+
+   electric& operator=(const electric& f)
+   {
+       if(this!=&f)
+       {
+           masina::operator=(f);
+
+       this->c_baterie=f.c_baterie;
+
+       }
+       return* this;
+   }
+   istream& citire(istream& in)
+   {
+       masina::citire(in);
+
+       cout<<"\nCapacitatea bateriei: ";
+       in>>this->c_baterie;
+
+       return in;
+   }
+   ostream& afisare(ostream& out)
+   {
+       masina::afisare(out);
+
+       out<<"\nCapacitatea bateriei: ";
+       out<<this->c_baterie;
+
+       return out;
+   }
+
+    double autonomie()
+    {
+        return (this->c_baterie)/(this->greutate*this->greutate);
+    }
+    ~electric()
+    {
+
+    }
+
+};
+
+class hibrid: public virtual fosil, public virtual electric
+{
+   public:
+   hibrid():masina(an_productie,nume,model,v_max,greutate),fosil(tip_rezervor,c_rezervor),electric(c_baterie)
+   {
+
+   }
+
+   hibrid(string tip_rezervor,double c_rezervor):masina(an_productie,nume,model,v_max,greutate),fosil(tip_rezervor,c_rezervor),electric(c_baterie)
+   {
+   }
+
+   hibrid (const hibrid& f):masina(f),fosil(f),electric(f)
+   {
+   }
+
+   hibrid& operator=(const hibrid& f)
+   {
+       if(this!=&f)
+       {
+           fosil::operator=(f);
+           electric::operator=(f);
+       }
+       return* this;
+   }
+   istream& citire(istream& in)
+   {
+       fosil::citire(in);
+       electric::citire(in);
+
+       return in;
+   }
+   ostream& afisare(ostream& out)
+   {
+       fosil::afisare(out);
+       electric::afisare(out);
+
+       return out;
+   }
+
+    double autonomie()
+    {
+        return ((this->c_baterie)/(this->greutate*this->greutate))+((this->c_rezervor)/(sqrt(this->greutate)));
+    }
+
+    ~hibrid()
+    {
+
+    }
+
+};
+
+class tranzactie
+{
+   protected:
+   string nume_client;
+   string data_tranzactie;
+   list<masina*>modele_achizitionate;
+
+   public:
+       tranzactie()
+       {
+           this->nume_client="nume_client";
+           this->data_tranzactie="zz.ll.aaaa";
+           this->modele_achizitionate={};
+       }
+      void setNumeClient(string nc)
+      {
+          this->nume_client=nc;
+      }
+      void setDataTranzactie(string dt)
+      {
+          this->data_tranzactie=dt;
+      }
+      void adaugaModel(masina* m)
+      {
+          this->modele_achizitionate.push_back(m);
+      }
+      string getNumeClient()
+      {
+          return this->nume_client;
+      }
+      string getDataTranzactie()
+      {
+          return this->data_tranzactie;
+      }
+      void afisModeleAchizitionate()
+      {
+          list<masina*>::iterator i;
+          for(i=modele_achizitionate.begin();i!=modele_achizitionate.end();i++)
+          {
+              cout<<**i<<endl;
+          }
+      }
+       ~tranzactie()
+       {
+
+       }
+};
+
+class producator
+{
+    protected:
+        list<masina*>modele_masina;
+        list<tranzactie*>lista_tranzactii;
+        list<int>frecventa;
+        int k;
+
+    public:
+        producator()
+        {
+            modele_masina={};
+            lista_tranzactii={};
+        }
+        void adaugaModel()
+        {
+            int comanda;
+            cout<<"\nTastati 1 pentru a adauga o masina pe combustibil fosil.";
+            cout<<"\nTastati 2 pentru a adauga o masina electrica.";
+            cout<<"\nTastati 3 pentru a adauga o masina hibrida.";
+            cout<<endl;
+            cin>>comanda;
+            switch(comanda)
+            {
+            case 1:
+                {
+                    fosil *f=new fosil;
+                    modele_masina.push_back(f);
+                    modele_masina.back()->citire(cin);
+                    frecventa.push_back(0);
+                    break;
+                }
+            case 2:
+                {
+                    electric *e=new electric;
+                    modele_masina.push_back(&*e);
+                    modele_masina.back()->citire(cin);
+                    frecventa.push_back(0);
+                    break;
+                }
+            case 3:
+                {
+                    hibrid *h=new hibrid;
+                    modele_masina.push_back(h);
+                    modele_masina.back()->citire(cin);
+                    frecventa.push_back(0);
+                    break;
+                }
+            }
+        }
+        void afisModele()
+        {
+             list<masina*>::iterator i;
+          for(i=modele_masina.begin();i!=modele_masina.end();i++)
+          {
+              cout<<**i<<endl;
+          }
+        }
+        void adaugaTranzactie()
+        {
+         string nc;
+         string dt;
+         cout<<"\nNumele clientului: ";
+         cin>>nc;
+         cout<<"\nData tranzactiei: ";
+         cin>>dt;
+         tranzactie t;
+         t.setNumeClient(nc);
+         t.setDataTranzactie(dt);
+         list<masina*>::iterator i2;
+         int index,contor=0;
+         for(i2=modele_masina.begin();i2!=modele_masina.end();i2++)
+         {
+             contor++;
+             cout<<contor<<". "<<**i2<<endl;
+
+         }
+         cout<<"\nAlegeti masina: ";
+         cin>>index;
+         i2=modele_masina.begin();
+         advance(i2,index);
+         t.adaugaModel(*i2);
+         list<int>::iterator j;
+         advance(j,index);
+         *j++;
+        }
+       void celMaiVandutModel()
+       {
+            list<int>::iterator j;
+            int maxim=0;
+            for(j=frecventa.begin();j!=frecventa.end();j++)
+            {
+                if(*j>maxim)
+                    maxim=*j;
+            }
+            list<masina*>::iterator j2;
+            advance(j2,maxim);
+            cout<<**j2;
+       }
+
+};
+    class meniuInteractiv
+    {
+    private:
+        static meniuInteractiv* ob;
+        meniuInteractiv()=default;
+        producator p;
+    public:
+        static meniuInteractiv* getInstance()
+        {
+            if(!ob)
+
+                ob=new meniuInteractiv();
+                return ob;
+
+        }
+        void start()
+        {
+            int k=1;
+            while(k==1)
+            {
+                cout<<"\n1. Adauga model.";
+                cout<<"\n2. Adauga tranzactie.";
+                cout<<"\n3. Afiseaza cel mai vandut model.";
+                int x;
+                cout<<endl;
+                cin>>x;
+                switch(x)
+                {
+                case 1:
+                {
+                   p.adaugaModel();
+                   system("c");
+                   break;
+                }
+                case 2:
+                    {
+                        p.adaugaTranzactie();
+                        system("c");
+                        break;
+                    }
+                case 3:
+                    {
+                        p.celMaiVandutModel();
+                        system("c");
+                        break;
+                    }
+                }
+
+            }
+        }
+    };
+    meniuInteractiv* meniuInteractiv::ob=0;
+int main()
+{
+  meniuInteractiv *meniu=meniuInteractiv::getInstance();
+    cout<<meniu<<endl;
+    meniu->start();
+    meniuInteractiv *meniu2=meniuInteractiv::getInstance();
+    cout<<meniu2;
+meniu2->start();
+return 0;
+}
